@@ -1,5 +1,9 @@
 from classifiers import *
 from utils import *
+import cv2
+import os
+import numpy as np
+
 # interpreting your performance with 100 training examples per category:
 # accuracy  =   0 ->  your code is broken (probably not the classifier's
 #                     fault! a classifier would have to be amazing to
@@ -34,4 +38,12 @@ from utils import *
 
 
 if __name__ == "__main__":
-    tinyImages(None, None, None,None, None)
+    data_dir = os.getcwd() + '/../data/train'
+    for subdir, dirs, files in os.walk(data_dir):
+        for file in files:
+            label = subdir.split('/')[-1]
+            img = os.path.join(subdir, file)
+            cv_img = cv2.imread(img)
+
+            print(label)
+            print(cv_img)

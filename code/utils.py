@@ -58,16 +58,6 @@ def tinyImages(train_features, test_features, train_labels, test_labels, label_d
     # test_labels is a nx1 array of integers, containing the label values
     # label_dict is a 15x1 array of strings, containing the names of the labels
     # classResult is a 18x1 array, containing accuracies and runtimes
-    # classResult = None
-    # data_dir = os.getcwd() + '/../data/train'
-    # for subdir, dirs, files in os.walk(data_dir):
-    #     for file in files:
-    #         label = subdir.split('/')[-1]
-    #         img = os.path.join(subdir, file)
-    #         cv_img = cv2.imread(img)
-    #
-    #         print(label)
-    #         print(cv_img)
     classResult = np.array()
     for size in [8,16,32]:
         train_features_resized = np.array([imresize(x,(size, size)) for x in train_features])
