@@ -1,5 +1,5 @@
 from classifiers import *
-
+from utils import *
 # interpreting your performance with 100 training examples per category:
 # accuracy  =   0 ->  your code is broken (probably not the classifier's
 #                     fault! a classifier would have to be amazing to
@@ -34,4 +34,4 @@ from classifiers import *
 
 
 if __name__ == "__main__":
-    pass
+    tinyImages(None, None, None,None, None)

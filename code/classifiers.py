@@ -20,7 +20,7 @@ def KNN_classifier(train_features, train_labels, test_features, num_neighbors):
     return predicted_categories
 
 
-def SVM_classifier(train_features, train_labels, test_features, is_linear, lambda):
+def SVM_classifier(train_features, train_labels, test_features, is_linear, svm_lambda):
     # this function will train a linear svm for every category (i.e. one vs all)
     # and then use the learned linear classifiers to predict the category of
     # every test image. every test feature will be evaluated with all 15 svms
