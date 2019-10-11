@@ -1,11 +1,13 @@
 import cv2
-import numpy
+import numpy as np
 import timeit
 from sklearn import neighbors, svm, cluster
 
 def imresize(input_image, target_size):
     # resizes the input image to a new image of size [target_size, target_size]. normalizes the output image
     # to be zero-mean, and in the [-1, 1] range.
+    output_image = cv2.resize(input_image, (target_size[0], target_size[1]))
+    output_image = cv2.normalize(output_image, None, alpha=-1, beta=1)
     return output_image
 
 def reportAccuracy(true_labels, predicted_labels, label_dict):
@@ -18,7 +20,8 @@ def reportAccuracy(true_labels, predicted_labels, label_dict):
     # label_dict is a 15x1 cell array where each entry is a string
     # containing the name of that category
     # accuracy is a scalar, defined in the spec (in %)
-
+    correct = np.equal(true_labels,predicted_labels)
+    accuracy = float(np.sum(correct)) / float(np.size(correct))
     return accuracy
 
 def buildDict(train_images, dict_size, feature_type, clustering_type):
@@ -33,7 +36,8 @@ def buildDict(train_images, dict_size, feature_type, clustering_type):
 
     # the output 'vocabulary' should be dict_size x d, where d is the 
     # dimention of the feature. each row is a cluster centroid / visual word.
-        return vocabulary
+    vocabulary = None
+    return vocabulary
 
 def computeBow(image, vocabulary, feature_type):
     # extracts features from the image, and returns a BOW representation using a vocabulary
@@ -43,6 +47,7 @@ def computeBow(image, vocabulary, feature_type):
     # used to create the vocabulary
 
     # BOW is the new image representation, a normalized histogram
+    Bow = None
     return Bow
 
 def tinyImages(train_features, test_features, train_labels, test_labels, label_dict):
@@ -52,6 +57,6 @@ def tinyImages(train_features, test_features, train_labels, test_labels, label_d
     # test_labels is a nx1 array of integers, containing the label values
     # label_dict is a 15x1 array of strings, containing the names of the labels
     # classResult is a 18x1 array, containing accuracies and runtimes
-    
+    classResult = None
     return classResult
     

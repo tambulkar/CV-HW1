@@ -1,4 +1,5 @@
 from utils import *
+from sklearn.neighbors import KNeighborsClassifier
 
 
 def KNN_classifier(train_features, train_labels, test_features, num_neighbors):
@@ -13,6 +14,9 @@ def KNN_classifier(train_features, train_labels, test_features, num_neighbors):
     # starter code.
     # predicted_categories is an M x 1 array, where each entry is an integer
     # indicating the predicted category for each test image.
+    knn = KNeighborsClassifier(n_neighbors=num_neighbors)
+    knn.fit(train_features, train_labels)
+    predicted_categories = knn.predict(test_features)
     return predicted_categories
 
 
@@ -36,4 +40,5 @@ def SVM_classifier(train_features, train_labels, test_features, is_linear, lambd
     # lambda is a scalar, the value of the regularizer for the SVMs
     # predicted_categories is an m x 1 array, where each entry is an integer
     # indicating the predicted category for each test image.
+    predicted_categories = None
     return predicted_categories
