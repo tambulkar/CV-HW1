@@ -58,7 +58,7 @@ def tinyImages(train_features, test_features, train_labels, test_labels, label_d
     # test_labels is a nx1 array of integers, containing the label values
     # label_dict is a 15x1 array of strings, containing the names of the labels
     # classResult is a 18x1 array, containing accuracies and runtimes
-    classResult = np.array()
+    classResult = np.array([])
     for size in [8,16,32]:
         train_features_resized = np.array([imresize(x,(size, size)) for x in train_features])
         train_labels_resized = np.array([imresize(x, (size, size)) for x in train_labels])

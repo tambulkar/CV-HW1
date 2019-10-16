@@ -1,4 +1,3 @@
-from utils import *
 from sklearn.neighbors import KNeighborsClassifier
 
 

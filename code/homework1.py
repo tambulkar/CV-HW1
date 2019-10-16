@@ -38,12 +38,27 @@ import numpy as np
 
 
 if __name__ == "__main__":
+    train_features = np.array([])
+    train_labels = np.array([])
+    test_features = np.array([])
+    test_labels = np.array([])
+
     data_dir = os.getcwd() + '/../data/train'
     for subdir, dirs, files in os.walk(data_dir):
         for file in files:
             label = subdir.split('/')[-1]
             img = os.path.join(subdir, file)
             cv_img = cv2.imread(img)
+            np.append(train_features, cv_img)
+            np.append(train_labels, label)
 
-            print(label)
-            print(cv_img)
+    data_dir = os.getcwd() + '/../data/test'
+    for subdir, dirs, files in os.walk(data_dir):
+        for file in files:
+            label = subdir.split('/')[-1]
+            img = os.path.join(subdir, file)
+            cv_img = cv2.imread(img)
+            np.append(test_features, cv_img)
+            np.append(test_labels, label)
+
+    print(tinyImages(train_features, test_features, train_labels, test_labels, None))
