@@ -9,20 +9,22 @@ def load_data():
     test_path = '../data/test/'
     train_path = '../data/train/'
 
-    train_classes = sorted([dirname for dirname in os.listdir(train_path)], key=lambda s: s.upper())
-    test_classes = sorted([dirname for dirname in os.listdir(test_path)], key=lambda s: s.upper())
+    train_classes = sorted([dirname for dirname in os.listdir(train_path) if not dirname.startswith('.')],
+                           key=lambda s: s.upper())
+    test_classes = sorted([dirname for dirname in os.listdir(test_path) if not dirname.startswith('.')],
+                          key=lambda s: s.upper())
     train_labels = []
     test_labels = []
     train_images = []
     test_images = []
     for i, label in enumerate(train_classes):
         for filename in os.listdir(train_path + label + '/'):
-            image = cv2.imread(train_path + label + '/' + filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+            image = cv2.imread(train_path + label + '/' + filename, cv2.IMREAD_GRAYSCALE)
             train_images.append(image)
             train_labels.append(i)
     for i, label in enumerate(test_classes):
         for filename in os.listdir(test_path + label + '/'):
-            image = cv2.imread(test_path + label + '/' + filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+            image = cv2.imread(test_path + label + '/' + filename, cv2.IMREAD_GRAYSCALE)
             test_images.append(image)
             test_labels.append(i)
 
@@ -42,7 +44,7 @@ def KNN_classifier(train_features, train_labels, test_features, num_neighbors):
 
     # predicted_categories is an M x 1 array, where each entry is an integer
     # indicating the predicted category for each test image.
-    knn = KNeighborsClassifier(n_neighbors=num_neighbors)
+    knn = neighbors.KNeighborsClassifier(n_neighbors=num_neighbors)
     knn.fit(train_features, train_labels)
     predicted_categories = knn.predict(test_features)
     return predicted_categories
@@ -76,7 +78,8 @@ def imresize(input_image, target_size):
     # resizes the input image, represented as a 2D array, to a new image of size [target_size, target_size].
     # Normalizes the output image to be zero-mean, and in the [-1, 1] range.
     output_image = cv2.resize(input_image, (target_size[0], target_size[1]))
-    output_image = cv2.normalize(output_image, None, alpha=-1, beta=1)
+    output_image = cv2.normalize(output_image, None, alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+    output_image = output_image.flatten()
     return output_image
 
 
@@ -92,7 +95,7 @@ def reportAccuracy(true_labels, predicted_labels):
     # accuracy is a scalar, defined in the spec (in %)
     correct = np.equal(true_labels,predicted_labels)
     accuracy = float(np.sum(correct)) / float(np.size(correct))
-    return accuracy
+    return accuracy*100
 
 
 def buildDict(train_images, dict_size, feature_type, clustering_type):
@@ -146,10 +149,18 @@ def tinyImages(train_features, test_features, train_labels, test_labels):
 
     classResult = np.array([])
     for size in [8,16,32]:
+        start = time.time()
         train_features_resized = np.array([imresize(x,(size, size)) for x in train_features])
-        train_labels_resized = np.array([imresize(x, (size, size)) for x in train_labels])
         test_features_resized = np.array([imresize(x, (size, size)) for x in test_features])
+        end = time.time()
+        resize_time = end - start
         for n_neighbors in [1,3,6]:
-            preds = KNN_classifier(train_features_resized, train_labels_resized, test_features_resized, n_neighbors)
-            np.append(classResult, reportAccuracy(test_labels, preds, label_dict))
+            start = time.time()
+            preds = KNN_classifier(train_features_resized, train_labels, test_features_resized, n_neighbors)
+            end = time.time()
+            classify_time = end - start
+
+            classResult = np.append(classResult, reportAccuracy(test_labels, preds))
+            classResult = np.append(classResult, resize_time + classify_time)
+            
     return classResult
