@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import timeit, time
 from sklearn import neighbors, svm, cluster, preprocessing
-
+from collections import defaultdict
 
 def load_data():
     test_path = '../data/test/'
@@ -153,7 +153,36 @@ def computeBow(image, vocabulary, feature_type):
     # used to create the vocabulary
 
     # BOW is the new image representation, a normalized histogram
-    Bow = None
+    Bow = defaultdict(int)
+    if feature_type == 'sift':
+        sift = cv2.xfeatures2d.SIFT_create()
+        descriptors = np.array(
+            [descriptor for descriptor in sift.detectAndCompute(image, None)[1]])
+    elif feature_type == 'surf':
+        surf = cv2.xfeatures2d.SURF_create()
+        descriptors = np.array(
+            [descriptor for descriptor in surf.detectAndCompute(image, None)[1]])
+    elif feature_type == 'orb':
+        orb = cv2.ORB()
+        descriptors = np.array(
+            [descriptor for descriptor in orb.detectAndCompute(image, None)[1]])
+    else:
+        raise NotImplementedError()
+
+    def dist(x,y):
+        return np.linalg.norm(x - y)
+
+    for descriptor in descriptors:
+        min_dist = float('inf')
+        label = None
+        for i, centroid in enumerate(vocabulary):
+            distance = dist(descriptor, centroid)
+            if min_dist > distance:
+                min_dist = distance
+                label = i
+
+        Bow[label] += 1
+
     return Bow
 
 
