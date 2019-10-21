@@ -4,7 +4,7 @@ import argparse
 parser = argparse.ArgumentParser(description='CS188.2 - Fall 19 - Homework 1')
 parser.add_argument("--tiny", "-t", type=bool, default=True, help='run Tiny Images')
 parser.add_argument("--create-path", "-cp", type=bool, default=True, help='create the Results directory')
-parser.parse_args()
+args = parser.parse_args()
 
 # The argument is included as an idea for debugging, with a few examples in the main. Feel free to modify it or add arguments.
 # You are also welcome to disregard this entirely
