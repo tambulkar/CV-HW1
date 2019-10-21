@@ -113,7 +113,34 @@ def buildDict(train_images, dict_size, feature_type, clustering_type):
 
     # NOTE: Should you run out of memory or have performance issues, feel free to limit the
     # number of descriptors you store per image.
-    vocabulary = None
+    if feature_type == 'sift':
+        sift = cv2.xfeatures2d.SIFT_create()
+        descriptors = np.array(
+            [descriptor for img in train_images for descriptor in sift.detectAndCompute(img, None)[1]])
+    elif feature_type == 'surf':
+        surf = cv2.xfeatures2d.SURF_create()
+        descriptors = np.array(
+            [descriptor for img in train_images for descriptor in surf.detectAndCompute(img, None)[1]])
+    elif feature_type == 'orb':
+        orb = cv2.ORB()
+        descriptors = np.array(
+            [descriptor for img in train_images for descriptor in orb.detectAndCompute(img, None)[1]])
+    else:
+        raise NotImplementedError()
+
+
+    if clustering_type == 'kmeans':
+        kmeans = cluster.KMeans(n_clusters=dict_size)
+        kmeans.fit(descriptors)
+        vocabulary = kmeans.cluster_centers_
+    elif clustering_type == 'hierarchical':
+        agg_cluster = cluster.AgglomerativeClustering(n_clusters=dict_size)
+        agg_cluster.fit(descriptors)
+        all_labels = np.unique(agg_cluster.labels_)
+        vocabulary = np.array([descriptors[agg_cluster.labels_ == label].mean(axis=0) for label in all_labels])
+    else:
+        raise NotImplementedError()
+
     return vocabulary
 
 
@@ -162,5 +189,5 @@ def tinyImages(train_features, test_features, train_labels, test_labels):
 
             classResult = np.append(classResult, reportAccuracy(test_labels, preds))
             classResult = np.append(classResult, resize_time + classify_time)
-            
+
     return classResult
