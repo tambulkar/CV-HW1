@@ -80,7 +80,7 @@ if __name__ == "__main__":
             test_rep.append(rep)
         np.save(SAVEPATH + 'bow_test_' + str(i) + '.npy',
                 np.asarray(test_rep))  # Save the representations for vocabulary i
-        train_rep = []  # reset the list to save the following vocabulary
+        test_rep = []  # reset the list to save the following vocabulary #TODO: CHECK IF CHANGE IS CORRECT
 
     # Use BOW features to classify the images with a KNN classifier
     # A list to store the accuracies and one for runtimes
@@ -90,6 +90,14 @@ if __name__ == "__main__":
     # Your code below, eg:
     # for i, vocab in enumerate(vocabularies):
     # ...
+    for i, vocab in enumerate(vocabularies):
+        X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
+        X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
+        y_pred = KNN_classifier(X, train_labels, X_test, 9)
+        res = reportAccuracy(test_labels, y_pred)
+        knn_accuracies.extend(res[::2])
+        knn_runtimes.extend(res[1::2])
+
 
     np.save(SAVEPATH + 'knn_accuracies.npy',
             np.asarray(knn_accuracies))  # Save the accuracies in the Results/ directory
@@ -101,6 +109,13 @@ if __name__ == "__main__":
 
     # Your code below
     # ...
+    for i, vocab in enumerate(vocabularies):
+        X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
+        X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
+        y_pred = SVM_classifier(X, train_labels, X_test, True, None)
+        res = reportAccuracy(test_labels, y_pred)
+        lin_accuracies.extend(res[::2])
+        lin_runtimes.extend(res[1::2])
 
     np.save(SAVEPATH + 'lin_accuracies.npy',
             np.asarray(lin_accuracies))  # Save the accuracies in the Results/ directory
@@ -112,6 +127,13 @@ if __name__ == "__main__":
 
     # Your code below
     # ...
+    for i, vocab in enumerate(vocabularies):
+        X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
+        X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
+        y_pred = SVM_classifier(X, train_labels, X_test, False, None)
+        res = reportAccuracy(test_labels, y_pred)
+        rbf_accuracies.extend(res[::2])
+        rbf_runtimes.extend(res[1::2])
 
     np.save(SAVEPATH + 'rbf_accuracies.npy',
             np.asarray(rbf_accuracies))  # Save the accuracies in the Results/ directory

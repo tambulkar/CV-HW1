@@ -70,7 +70,20 @@ def SVM_classifier(train_features, train_labels, test_features, is_linear, svm_l
 
     # predicted_categories is an M x 1 array, where each entry is an integer
     # indicating the predicted category for each test feature.
-    predicted_categories = None
+    y_preds = []
+    for i in range(15):
+        train_labels_filtered = train_labels[train_labels == i]
+        if is_linear:
+            svm_cls = svm.SVC(kernel='linear')
+        else:
+            svm_cls = svm.SVC(kernel='rbf')
+
+        svm_cls.fit(train_features, train_labels_filtered)
+        y_pred = svm_cls.predict_proba(test_features)
+        y_preds.append(y_pred)
+
+    predicted_categories = np.array([probs.index(max(probs)) for probs in zip(*y_preds)])
+
     return predicted_categories
 
 
@@ -153,7 +166,7 @@ def computeBow(image, vocabulary, feature_type):
     # used to create the vocabulary
 
     # BOW is the new image representation, a normalized histogram
-    Bow = defaultdict(int)
+
     if feature_type == 'sift':
         sift = cv2.xfeatures2d.SIFT_create()
         descriptors = np.array(
@@ -171,6 +184,8 @@ def computeBow(image, vocabulary, feature_type):
 
     def dist(x,y):
         return np.linalg.norm(x - y)
+
+    Bow = [0 for i in vocabulary]
 
     for descriptor in descriptors:
         min_dist = float('inf')
