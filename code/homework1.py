@@ -71,23 +71,23 @@ if __name__ == "__main__":
     # for vocabulary generation
 
     # You need to write ComputeBow()
-    for i, vocab in enumerate(vocabularies[:2]):
-        for image in train_images:  # Compute the BOW representation of the training set
-            rep = computeBow(image, vocab, features[i])  # Rep is a list of descriptors for a given image
-            train_rep.append(rep)
-        np.save(SAVEPATH + 'bow_train_' + str(i) + '.npy',
-                np.asarray(train_rep))  # Save the representations for vocabulary i
-        filename = SAVEPATH + 'bow_train_' + str(i) + '.npy'
-        print(filename)
-        train_rep = []  # reset the list to save the following vocabulary
-        for image in test_images:  # Compute the BOW representation of the testing set
-            rep = computeBow(image, vocab, features[i])
-            test_rep.append(rep)
-        np.save(SAVEPATH + 'bow_test_' + str(i) + '.npy',
-                np.asarray(test_rep))  # Save the representations for vocabulary i
-        filename = SAVEPATH + 'bow_test_' + str(i) + '.npy'
-        print(filename)
-        test_rep = []  # reset the list to save the following vocabulary
+    # for i, vocab in enumerate(vocabularies):
+    #     for image in train_images:  # Compute the BOW representation of the training set
+    #         rep = computeBow(image, vocab, features[i])  # Rep is a list of descriptors for a given image
+    #         train_rep.append(rep)
+    #     np.save(SAVEPATH + 'bow_train_' + str(i) + '.npy',
+    #             np.asarray(train_rep))  # Save the representations for vocabulary i
+    #     filename = SAVEPATH + 'bow_train_' + str(i) + '.npy'
+    #     print(filename)
+    #     train_rep = []  # reset the list to save the following vocabulary
+    #     for image in test_images:  # Compute the BOW representation of the testing set
+    #         rep = computeBow(image, vocab, features[i])
+    #         test_rep.append(rep)
+    #     np.save(SAVEPATH + 'bow_test_' + str(i) + '.npy',
+    #             np.asarray(test_rep))  # Save the representations for vocabulary i
+    #     filename = SAVEPATH + 'bow_test_' + str(i) + '.npy'
+    #     print(filename)
+    #     test_rep = []  # reset the list to save the following vocabulary
 
     # Use BOW features to classify the images with a KNN classifier
     # A list to store the accuracies and one for runtimes
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # # ...
     train_labels = np.array(train_labels)
     test_labels = np.array(test_labels)
-    for i, vocab in enumerate(vocabularies[:2]):
+    for i, vocab in enumerate(vocabularies):
         X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
         X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
         start = time.time()
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     # Your code below
     # ...
-    for i, vocab in enumerate(vocabularies[:2]):
+    for i, vocab in enumerate(vocabularies):
         X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
         X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
         start = time.time()
@@ -133,9 +133,6 @@ if __name__ == "__main__":
         acc = reportAccuracy(test_labels, y_pred)
         lin_accuracies.append(acc)
         lin_runtimes.append(runtime)
-        print(acc)
-        print(runtime)
-        print()
 
     print(lin_accuracies)
     print(lin_runtimes)
@@ -150,7 +147,7 @@ if __name__ == "__main__":
 
     # Your code below
     # ...
-    for i, vocab in enumerate(vocabularies[:2]):
+    for i, vocab in enumerate(vocabularies):
         X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
         X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
         start = time.time()

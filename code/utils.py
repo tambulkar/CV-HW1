@@ -200,7 +200,7 @@ def computeBow(image, vocabulary, feature_type):
     # if len(descriptors) != 0:
     #     labels = list(range(len(vocabulary)))
     #     words = KNN_classifier(vocabulary, labels, descriptors, num_neighbors=1)
-    distances = cdist(descriptors, vocabulary) if len(descriptors) != 0 else []
+    distances = cdist(descriptors, vocabulary) if len(descriptors) != 0 else [[0]]
     min_indexes = [list(dists).index(min(dists)) for dists in distances]
     # for index in min_indexes:
     #     Bow[index] += 1
