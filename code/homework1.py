@@ -77,41 +77,45 @@ if __name__ == "__main__":
     #         train_rep.append(rep)
     #     np.save(SAVEPATH + 'bow_train_' + str(i) + '.npy',
     #             np.asarray(train_rep))  # Save the representations for vocabulary i
+    #     filename = SAVEPATH + 'bow_train_' + str(i) + '.npy'
+    #     print(filename)
     #     train_rep = []  # reset the list to save the following vocabulary
     #     for image in test_images:  # Compute the BOW representation of the testing set
     #         rep = computeBow(image, vocab, features[i])
     #         test_rep.append(rep)
     #     np.save(SAVEPATH + 'bow_test_' + str(i) + '.npy',
     #             np.asarray(test_rep))  # Save the representations for vocabulary i
-    #     test_rep = []  # reset the list to save the following vocabulary #TODO: CHECK IF CHANGE IS CORRECT
+    #     filename = SAVEPATH + 'bow_test_' + str(i) + '.npy'
+    #     print(filename)
+    #     test_rep = []  # reset the list to save the following vocabulary
 
     # Use BOW features to classify the images with a KNN classifier
     # A list to store the accuracies and one for runtimes
-    knn_accuracies = []
-    knn_runtimes = []
-
-    # Your code below, eg:
+    # knn_accuracies = []
+    # knn_runtimes = []
+    #
+    # # Your code below, eg:
+    # # for i, vocab in enumerate(vocabularies):
+    # # ...
+    # train_labels = np.array(train_labels)
+    # test_labels = np.array(test_labels)
     # for i, vocab in enumerate(vocabularies):
-    # ...
-    train_labels = np.array(train_labels)
-    test_labels = np.array(test_labels)
-    for i, vocab in enumerate(vocabularies):
-        X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
-        X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
-        start = time.time()
-        y_pred = KNN_classifier(X, train_labels, X_test, 9)
-        end = time.time()
-        runtime = end - start
-        acc = reportAccuracy(test_labels, y_pred)
-        knn_accuracies.append(acc)
-        knn_runtimes.append(runtime)
-
-    print(knn_accuracies)
-    print(knn_runtimes)
-
-    np.save(SAVEPATH + 'knn_accuracies.npy',
-            np.asarray(knn_accuracies))  # Save the accuracies in the Results/ directory
-    np.save(SAVEPATH + 'knn_runtimes.npy', np.asarray(knn_runtimes))  # Save the runtimes in the Results/ directory
+    #     X = np.load(SAVEPATH + 'bow_train_' + str(i) + '.npy')
+    #     X_test = np.load(SAVEPATH + 'bow_test_' + str(i) + '.npy')
+    #     start = time.time()
+    #     y_pred = KNN_classifier(X, train_labels, X_test, 9)
+    #     end = time.time()
+    #     runtime = end - start
+    #     acc = reportAccuracy(test_labels, y_pred)
+    #     knn_accuracies.append(acc)
+    #     knn_runtimes.append(runtime)
+    #
+    # print(knn_accuracies)
+    # print(knn_runtimes)
+    #
+    # np.save(SAVEPATH + 'knn_accuracies.npy',
+    #         np.asarray(knn_accuracies))  # Save the accuracies in the Results/ directory
+    # np.save(SAVEPATH + 'knn_runtimes.npy', np.asarray(knn_runtimes))  # Save the runtimes in the Results/ directory
 
     # Use BOW features to classify the images with 15 Linear SVM classifiers
     lin_accuracies = []
@@ -129,6 +133,9 @@ if __name__ == "__main__":
         acc = reportAccuracy(test_labels, y_pred)
         lin_accuracies.append(acc)
         lin_runtimes.append(runtime)
+        print(acc)
+        print(runtime)
+        print()
 
     print(lin_accuracies)
     print(lin_runtimes)
@@ -153,9 +160,6 @@ if __name__ == "__main__":
         acc = reportAccuracy(test_labels, y_pred)
         rbf_accuracies.append(acc)
         rbf_runtimes.append(runtime)
-        print(acc)
-        print(runtime)
-        print()
 
     print(rbf_accuracies)
     print(rbf_runtimes)

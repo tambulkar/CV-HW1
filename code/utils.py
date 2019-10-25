@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import timeit, time
 from sklearn import neighbors, svm, cluster, preprocessing
-from collections import defaultdict
+from scipy.spatial.distance import cdist
 
 def load_data():
     test_path = '../data/test/'
@@ -72,14 +72,14 @@ def SVM_classifier(train_features, train_labels, test_features, is_linear, svm_l
     # indicating the predicted category for each test feature.
     y_preds = []
     for i in range(15):
-        train_labels_filtered = (train_labels == i).astype(int)
+        train_labels_filtered = (np.array(train_labels) == i).astype(int)
         if is_linear:
             svm_cls = svm.SVC(kernel='linear', probability=True, C=svm_lambda)
         else:
             svm_cls = svm.SVC(kernel='rbf', probability=True, C=svm_lambda)
 
         svm_cls.fit(train_features, train_labels_filtered)
-        y_pred = [pred[0] for pred in svm_cls.predict_proba(test_features)]
+        y_pred = [pred[1] for pred in svm_cls.predict_proba(test_features)]
         y_preds.append(y_pred)
 
     predicted_categories = np.array([probs.index(max(probs)) for probs in zip(*y_preds)])
@@ -189,7 +189,6 @@ def computeBow(image, vocabulary, feature_type):
             for d in desc:
                 descriptors.append(d)
         descriptors = np.array(descriptors)
-
     else:
         raise NotImplementedError()
 
@@ -197,19 +196,24 @@ def computeBow(image, vocabulary, feature_type):
         return np.linalg.norm(x - y)
 
     Bow = [0 for i in vocabulary]
-
-    for descriptor in descriptors:
-        min_dist = float('inf')
-        label = None
-        for i, centroid in enumerate(vocabulary):
-            distance = dist(descriptor, centroid)
-            if min_dist > distance:
-                min_dist = distance
-                label = i
-
-        Bow[label] += 1
-
-    return Bow
+    # words = [-1]
+    # if len(descriptors) != 0:
+    #     labels = list(range(len(vocabulary)))
+    #     words = KNN_classifier(vocabulary, labels, descriptors, num_neighbors=1)
+    distances = cdist(descriptors, vocabulary) if len(descriptors) != 0 else []
+    min_indexes = [list(dists).index(min(dists)) for dists in distances]
+    for index in min_indexes:
+        Bow[index] += 1
+    # for descriptor in descriptors:
+    #     min_dist = float('inf')
+    #     label = None
+    #     for i, centroid in enumerate(vocabulary):
+    #         distance = dist(descriptor, centroid)
+    #         if min_dist > distance:
+    #             min_dist = distance
+    #             label = i
+    #     Bow[label] += 1
+    return Bow # np.histogram(words, bins=len(vocabulary), density=True)
 
 
 def tinyImages(train_features, test_features, train_labels, test_labels):
