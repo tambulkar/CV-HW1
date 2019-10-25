@@ -72,14 +72,14 @@ def SVM_classifier(train_features, train_labels, test_features, is_linear, svm_l
     # indicating the predicted category for each test feature.
     y_preds = []
     for i in range(15):
-        train_labels_filtered = train_labels[train_labels == i]
+        train_labels_filtered = (train_labels == i).astype(int)
         if is_linear:
-            svm_cls = svm.SVC(kernel='linear')
+            svm_cls = svm.SVC(kernel='linear', probability=True, C=svm_lambda)
         else:
-            svm_cls = svm.SVC(kernel='rbf')
+            svm_cls = svm.SVC(kernel='rbf', probability=True, C=svm_lambda)
 
         svm_cls.fit(train_features, train_labels_filtered)
-        y_pred = svm_cls.predict_proba(test_features)
+        y_pred = [pred[0] for pred in svm_cls.predict_proba(test_features)]
         y_preds.append(y_pred)
 
     predicted_categories = np.array([probs.index(max(probs)) for probs in zip(*y_preds)])
@@ -135,9 +135,14 @@ def buildDict(train_images, dict_size, feature_type, clustering_type):
         descriptors = np.array(
             [descriptor for img in train_images for descriptor in surf.detectAndCompute(img, None)[1]])
     elif feature_type == 'orb':
-        orb = cv2.ORB()
-        descriptors = np.array(
-            [descriptor for img in train_images for descriptor in orb.detectAndCompute(img, None)[1]])
+        orb = cv2.ORB_create()
+        descriptors = []
+        for img in train_images:
+            desc = orb.detectAndCompute(img, None)[1]
+            if not desc is None:
+                for d in desc:
+                    descriptors.append(d)
+        descriptors = np.array(descriptors)
     else:
         raise NotImplementedError()
 
@@ -148,6 +153,7 @@ def buildDict(train_images, dict_size, feature_type, clustering_type):
         vocabulary = kmeans.cluster_centers_
     elif clustering_type == 'hierarchical':
         agg_cluster = cluster.AgglomerativeClustering(n_clusters=dict_size)
+        descriptors = descriptors[np.random.randint(descriptors.shape[0], size=descriptors.shape[0]//25), :]
         agg_cluster.fit(descriptors)
         all_labels = np.unique(agg_cluster.labels_)
         vocabulary = np.array([descriptors[agg_cluster.labels_ == label].mean(axis=0) for label in all_labels])
@@ -176,9 +182,14 @@ def computeBow(image, vocabulary, feature_type):
         descriptors = np.array(
             [descriptor for descriptor in surf.detectAndCompute(image, None)[1]])
     elif feature_type == 'orb':
-        orb = cv2.ORB()
-        descriptors = np.array(
-            [descriptor for descriptor in orb.detectAndCompute(image, None)[1]])
+        orb = cv2.ORB_create()
+        desc = orb.detectAndCompute(image, None)[1]
+        descriptors = []
+        if not desc is None:
+            for d in desc:
+                descriptors.append(d)
+        descriptors = np.array(descriptors)
+
     else:
         raise NotImplementedError()
 
