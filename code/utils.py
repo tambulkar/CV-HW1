@@ -74,9 +74,9 @@ def SVM_classifier(train_features, train_labels, test_features, is_linear, svm_l
     for i in range(15):
         train_labels_filtered = (np.array(train_labels) == i).astype(int)
         if is_linear:
-            svm_cls = svm.SVC(kernel='linear', probability=True, C=svm_lambda)
+            svm_cls = svm.SVC(kernel='linear', probability=True, C=svm_lambda, gamma='scale')
         else:
-            svm_cls = svm.SVC(kernel='rbf', probability=True, C=svm_lambda)
+            svm_cls = svm.SVC(kernel='rbf', probability=True, C=svm_lambda, gamma='scale')
 
         svm_cls.fit(train_features, train_labels_filtered)
         y_pred = [pred[1] for pred in svm_cls.predict_proba(test_features)]
@@ -202,8 +202,8 @@ def computeBow(image, vocabulary, feature_type):
     #     words = KNN_classifier(vocabulary, labels, descriptors, num_neighbors=1)
     distances = cdist(descriptors, vocabulary) if len(descriptors) != 0 else []
     min_indexes = [list(dists).index(min(dists)) for dists in distances]
-    for index in min_indexes:
-        Bow[index] += 1
+    # for index in min_indexes:
+    #     Bow[index] += 1
     # for descriptor in descriptors:
     #     min_dist = float('inf')
     #     label = None
@@ -213,7 +213,7 @@ def computeBow(image, vocabulary, feature_type):
     #             min_dist = distance
     #             label = i
     #     Bow[label] += 1
-    return Bow # np.histogram(words, bins=len(vocabulary), density=True)
+    return np.histogram(min_indexes, bins=len(vocabulary), density=True)[0] # Bow
 
 
 def tinyImages(train_features, test_features, train_labels, test_labels):
